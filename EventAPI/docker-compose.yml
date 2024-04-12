@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - mynet
+    depends_on:
+      api:
+        condition: service_healthy
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_ADMIN_PASSWORD=admin
+    networks:
+      - mynet
+
+  api:
+    build:
+      context: .
+    container_name: api
+    tty: true
+    ports:
+      - "8080:8080"
+    networks:
+      - mynet
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/healthz || exit 1
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    depends_on:
+      - seq
+
+networks:
+  mynet:
+    driver: bridge
