@@ -1,6 +1,8 @@
 using EventAPI.Models;
 using EventAPI.Services;
 
+namespace EventAPI.Endpoints;
+
 public static class Events
 {
   public static void RegisterEndpoints(this IEndpointRouteBuilder routes, EventService eventService)
