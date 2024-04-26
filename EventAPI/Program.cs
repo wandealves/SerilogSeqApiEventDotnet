@@ -15,9 +15,11 @@ builder.AddLogSettings("EventAPI", builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//
+//Tratamento de erros global
 builder.Services.AddExceptionHandler<GlobalException>();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddSingleton<IEventService, EventService>();
 
 var app = builder.Build();
 
@@ -33,7 +35,7 @@ app.MapHealthChecks("/healthz");
 app.UseHttpsRedirection();
 
 //Rotas
-app.RegisterEndpoints(new EventService());
+app.RegisterEndpoints();
 
 app.UseExceptionHandler();
 
