@@ -10,6 +10,7 @@ public static class LogSettings
     if (string.IsNullOrWhiteSpace(seq)) throw new ArgumentNullException("Seq is required");
     Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
     builder.Logging.ClearProviders();
+    builder.Host.UseSerilog(Log.Logger, true);
     var logger = new LoggerConfiguration();
     logger.Enrich.WithProperty("ApplicationName", $"{applicationName} - {Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}")
     .MinimumLevel.Information()
@@ -27,6 +28,5 @@ public static class LogSettings
     }
     logger.WriteTo.Seq(seq, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information);
     builder.Logging.AddSerilog(logger.CreateLogger());
-
   }
 }
