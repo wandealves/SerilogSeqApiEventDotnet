@@ -31,5 +31,11 @@ public static class Events
     })
     .WithName("DeleteEvent")
     .WithTags("Events");
+    events.MapDelete("/batch", (IEventService service) =>
+    {
+      service.BatchDelete();
+    })
+    .WithName("BatchDeleteEvents")
+    .WithTags("Events");
   }
 }

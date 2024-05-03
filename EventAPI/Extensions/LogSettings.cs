@@ -10,8 +10,9 @@ public static class LogSettings
     if (string.IsNullOrWhiteSpace(seq)) throw new ArgumentNullException("Seq is required");
     Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
     builder.Logging.ClearProviders();
-    var logger = new LoggerConfiguration()
-    .Enrich.WithProperty("ApplicationName", $"{applicationName} - {Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}")
+    var logger = new LoggerConfiguration();
+    logger.Enrich.WithProperty("ApplicationName", $"{applicationName} - {Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}")
+    .MinimumLevel.Information()
     .Enrich.WithEnvironmentName()
     .Enrich.WithMachineName()
     .Enrich.WithProcessId()
@@ -19,11 +20,13 @@ public static class LogSettings
     .Enrich.WithMemoryUsage()
     .Enrich.FromLogContext()
     .Enrich.WithCorrelationId()
-    .Enrich.WithCorrelationIdHeader()
-    .WriteTo.Console()
-    .WriteTo.Seq(seq)
-    .CreateLogger();
-    builder.Logging.AddSerilog(logger);
+    .Enrich.WithCorrelationIdHeader();
+    if (builder.Environment.EnvironmentName == "Development")
+    {
+      logger.WriteTo.Console(outputTemplate: "{Timestamp:yyy-MM-dd HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Exception}");
+    }
+    logger.WriteTo.Seq(seq, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information);
+    builder.Logging.AddSerilog(logger.CreateLogger());
 
   }
 }

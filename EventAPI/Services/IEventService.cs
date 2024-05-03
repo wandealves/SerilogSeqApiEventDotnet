@@ -9,4 +9,5 @@ public interface IEventService
     Event Create(Event newEvent);
     void Update(int id, Event updatedEvent);
     void Delete(int id);
+    void BatchDelete();
 }

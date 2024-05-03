@@ -35,21 +35,26 @@ public class EventService : IEventService
     {
         _logger.LogInformation("Updating event with id {id}", id);
         var existingEvent = _events.FirstOrDefault(e => e.Id == id);
-        if (existingEvent != null)
-        {
-            existingEvent.Title = updatedEvent.Title;
-            existingEvent.StartDateTime = updatedEvent.StartDateTime;
-            existingEvent.EndDateTime = updatedEvent.EndDateTime;
-        }
+        if (existingEvent is null) throw new InvalidOperationException("Event not found");
+        existingEvent.Title = updatedEvent.Title;
+        existingEvent.StartDateTime = updatedEvent.StartDateTime;
+        existingEvent.EndDateTime = updatedEvent.EndDateTime;
     }
 
     public void Delete(int id)
     {
         _logger.LogInformation("Deleting event with id {id}", id);
         var existingEvent = _events.FirstOrDefault(e => e.Id == id);
-        if (existingEvent != null)
+        if (existingEvent is null) throw new InvalidOperationException("Event not found");
+        _events.Remove(existingEvent);
+    }
+
+    public void BatchDelete()
+    {
+        if (_events.Count == 0)
         {
-            _events.Remove(existingEvent);
+            throw new InvalidOperationException("No events to delete");
         }
+        _events.Clear();
     }
 }

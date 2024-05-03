@@ -16,7 +16,7 @@ public class GlobalException : IExceptionHandler
     {
         var exceptionMessage = exception.Message;
         logger.LogError(
-            "Error Message: {exceptionMessage}, Time of occurrence {time}",
+            "Error Message: {exceptionMessage}, time of occurrence {time}",
             exceptionMessage, DateTime.UtcNow);
         return ValueTask.FromResult(false);
     }
